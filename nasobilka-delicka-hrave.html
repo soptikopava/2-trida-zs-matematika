@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Násobilka a dělení hravě</title>
+  <style>
+    :root {
+      --bg1: #fff7ed;
+      --bg2: #ecfeff;
+      --card: #ffffff;
+      --text: #1f2937;
+      --accent: #7c3aed;
+      --good: #16a34a;
+      --bad: #dc2626;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top left, #fef3c7 0, transparent 40%),
+                  radial-gradient(circle at top right, #bfdbfe 0, transparent 35%),
+                  linear-gradient(150deg, var(--bg1), var(--bg2));
+      min-height: 100vh;
+    }
+
+    .wrap { max-width: 980px; margin: 0 auto; padding: 22px; }
+
+    .hero {
+      background: var(--card);
+      border-radius: 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    h1 { margin: 0; color: #5b21b6; font-size: clamp(1.5rem, 2.4vw, 2rem); }
+    .subtitle { margin: 8px 0 0; color: #4b5563; }
+    .mascot { font-size: 56px; background: #f3e8ff; border-radius: 999px; padding: 6px 14px; }
+
+    .board {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--card);
+      border-radius: 24px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      padding: 18px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    label { font-weight: 700; font-size: .95rem; }
+    select, button, input {
+      width: 100%;
+      border: 2px solid #ddd6fe;
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 1rem;
+    }
+
+    button {
+      border: none;
+      background: #7c3aed;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover { filter: brightness(1.06); }
+
+    .task {
+      text-align: center;
+      margin-top: 12px;
+      padding: 20px;
+      border-radius: 18px;
+      background: #f8fafc;
+      border: 2px dashed #c4b5fd;
+    }
+
+    .example { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 14px; }
+    .msg { min-height: 28px; font-weight: 700; text-align: center; margin-top: 10px; }
+
+    .stats { display: grid; gap: 10px; }
+    .pill {
+      padding: 12px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      font-weight: 700;
+    }
+
+    .progress {
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress > span { display: block; height: 100%; background: linear-gradient(90deg, #f59e0b, #f97316); width: 0; transition: width .3s; }
+
+    .badge-list { margin-top: 10px; display: grid; gap: 8px; }
+    .badge { padding: 8px 10px; border-radius: 12px; background: #eef2ff; font-size: .95rem; }
+    .badge.locked { opacity: .5; }
+
+    .row { display: flex; gap: 8px; }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; text-align: center; }
+      .board { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Násobilka a dělení pro 2. třídu ✨</h1>
+        <p class="subtitle">Vyber si násobitele, počítej příklady a sbírej hvězdičky s medvídkem Matýskem 🐻.</p>
+      </div>
+      <div id="mascot" class="mascot">🐻</div>
+    </section>
+
+    <section class="hero" style="margin-top:14px; padding:12px 20px; grid-template-columns:1fr auto auto;">
+      <a href="index.html" style="text-decoration:none; font-weight:700; color:#1d4ed8;">⬅ Zpět na výběr témat</a>
+      <a href="matematicky-skokan-pres-desitku.html" style="text-decoration:none; font-weight:700; color:#0f766e;">Skokan přes desítku</a>
+      <span style="font-weight:700; color:#7c3aed;">Hraj a sbírej hvězdy ⭐</span>
+    </section>
+
+    <section class="board">
+      <div class="panel">
+        <div class="controls">
+          <div>
+            <label for="multiplier">Násobilka</label>
+            <select id="multiplier"></select>
+          </div>
+          <div>
+            <label for="mode">Typ příkladů</label>
+            <select id="mode">
+              <option value="mix">Krát + děleno (mix)</option>
+              <option value="mul">Jen krát</option>
+              <option value="div">Jen děleno</option>
+            </select>
+          </div>
+          <div>
+            <label for="maxNum">Rozsah čísel</label>
+            <select id="maxNum">
+              <option value="10">do 10</option>
+              <option value="12">do 12</option>
+              <option value="20">do 20</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="task">
+          <div id="example" class="example">2 × 3 = ?</div>
+          <div class="row">
+            <input id="answer" type="number" placeholder="Napiš výsledek" />
+            <button id="checkBtn">Zkontrolovat</button>
+          </div>
+          <div class="row" style="margin-top:8px;">
+            <button id="nextBtn" style="background:#334155;">Další příklad</button>
+          </div>
+        </div>
+        <p id="message" class="msg"></p>
+      </div>
+
+      <aside class="panel">
+        <div class="stats">
+          <div class="pill" id="score">Body: 0</div>
+          <div class="pill" id="streak">Série: 0</div>
+          <div class="pill" id="stars">Hvězdy: 0 ⭐</div>
+          <div class="pill" id="level">Level: 1</div>
+          <div class="pill">Postup do dalšího levelu
+            <div class="progress"><span id="bar"></span></div>
+          </div>
+          <div class="pill" id="goal">Denní mise: 0 / 10 správně</div>
+        </div>
+
+        <h3>Odznaky</h3>
+        <div class="badge-list" id="badges"></div>
+      </aside>
+    </section>
+  </div>
+
+  <script>
+    const state = {
+      multiplier: 2,
+      mode: 'mix',
+      maxNum: 10,
+      score: 0,
+      streak: 0,
+      stars: 0,
+      level: 1,
+      correctCount: 0,
+      current: null,
+      unlocked: new Set()
+    };
+
+    const badgeDefs = [
+      { id: 'first', label: '🌟 První správná odpověď', test: s => s.correctCount >= 1 },
+      { id: 'streak5', label: '🔥 Série 5 správně', test: s => s.streak >= 5 },
+      { id: 'stars20', label: '⭐ 20 hvězd', test: s => s.stars >= 20 },
+      { id: 'level3', label: '🚀 Level 3', test: s => s.level >= 3 }
+    ];
+
+    const el = {
+      multiplier: document.getElementById('multiplier'),
+      mode: document.getElementById('mode'),
+      maxNum: document.getElementById('maxNum'),
+      example: document.getElementById('example'),
+      answer: document.getElementById('answer'),
+      message: document.getElementById('message'),
+      score: document.getElementById('score'),
+      streak: document.getElementById('streak'),
+      stars: document.getElementById('stars'),
+      level: document.getElementById('level'),
+      goal: document.getElementById('goal'),
+      bar: document.getElementById('bar'),
+      badges: document.getElementById('badges'),
+      mascot: document.getElementById('mascot')
+    };
+
+    for (let i = 2; i <= 10; i++) {
+      const option = document.createElement('option');
+      option.value = String(i);
+      option.textContent = `násobilka ${i}`;
+      el.multiplier.appendChild(option);
+    }
+
+    function generateExample() {
+      const m = state.multiplier;
+      const n = Math.floor(Math.random() * state.maxNum) + 1;
+      let type = state.mode;
+      if (type === 'mix') type = Math.random() < 0.5 ? 'mul' : 'div';
+
+      if (type === 'mul') {
+        state.current = { text: `${m} × ${n} = ?`, result: m * n };
+      } else {
+        state.current = { text: `${m * n} ÷ ${m} = ?`, result: n };
+      }
+
+      el.example.textContent = state.current.text;
+      el.answer.value = '';
+      el.answer.focus();
+    }
+
+    function updateUI() {
+      el.score.textContent = `Body: ${state.score}`;
+      el.streak.textContent = `Série: ${state.streak}`;
+      el.stars.textContent = `Hvězdy: ${state.stars} ⭐`;
+      el.level.textContent = `Level: ${state.level}`;
+      el.goal.textContent = `Denní mise: ${state.correctCount} / 10 správně`;
+
+      const toNext = state.level * 15;
+      const progress = Math.min(100, (state.stars / toNext) * 100);
+      el.bar.style.width = `${progress}%`;
+
+      const mascotMood = state.streak >= 3 ? '😄' : (state.streak === 0 ? '🐻' : '🙂');
+      el.mascot.textContent = mascotMood;
+
+      el.badges.innerHTML = '';
+      for (const b of badgeDefs) {
+        const unlocked = state.unlocked.has(b.id);
+        const div = document.createElement('div');
+        div.className = `badge ${unlocked ? '' : 'locked'}`;
+        div.textContent = unlocked ? `${b.label} ✅` : `${b.label} 🔒`;
+        el.badges.appendChild(div);
+      }
+    }
+
+    function unlockBadges() {
+      for (const b of badgeDefs) {
+        if (!state.unlocked.has(b.id) && b.test(state)) {
+          state.unlocked.add(b.id);
+          state.stars += 2;
+          el.message.textContent = `🎉 Nový odznak: ${b.label} (+2 ⭐)`;
+          el.message.style.color = '#7c3aed';
+        }
+      }
+    }
+
+    function checkAnswer() {
+      const value = Number(el.answer.value);
+      if (!Number.isFinite(value)) {
+        el.message.textContent = 'Zadej číslo.';
+        el.message.style.color = '#b45309';
+        return;
+      }
+
+      if (value === state.current.result) {
+        state.correctCount += 1;
+        state.streak += 1;
+        state.score += 10;
+        state.stars += 1 + Math.floor(state.streak / 3);
+
+        if (state.correctCount % 10 === 0) {
+          state.stars += 5;
+          el.message.textContent = '🏆 Mise splněna! Bonus +5 ⭐';
+        } else {
+          el.message.textContent = 'Skvěle! Správně ✅';
+        }
+
+        el.message.style.color = 'var(--good)';
+      } else {
+        state.streak = 0;
+        state.score = Math.max(0, state.score - 3);
+        el.message.textContent = `Nevadí, správně je ${state.current.result}. Zkus další.`;
+        el.message.style.color = 'var(--bad)';
+      }
+
+      while (state.stars >= state.level * 15) {
+        state.level += 1;
+        el.message.textContent = `🌈 Nový level ${state.level}! Medvídek tleská!`;
+      }
+
+      unlockBadges();
+      updateUI();
+      setTimeout(generateExample, 450);
+    }
+
+    document.getElementById('checkBtn').addEventListener('click', checkAnswer);
+    document.getElementById('nextBtn').addEventListener('click', generateExample);
+
+    el.answer.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkAnswer();
+    });
+
+    el.multiplier.addEventListener('change', () => {
+      state.multiplier = Number(el.multiplier.value);
+      generateExample();
+    });
+
+    el.mode.addEventListener('change', () => {
+      state.mode = el.mode.value;
+      generateExample();
+    });
+
+    el.maxNum.addEventListener('change', () => {
+      state.maxNum = Number(el.maxNum.value);
+      generateExample();
+    });
+
+    updateUI();
+    generateExample();
+  </script>
+</body>
+</html>
