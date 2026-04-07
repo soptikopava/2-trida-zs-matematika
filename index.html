@@ -1,8 +1,144 @@
 <!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body>
-    <a href="https://soptikopava.github.io/2-trida-zs-matematika/matematicky-skokan-pres-desitku.html"> Matematika - odčítání přes desítku</a>
-  </body>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2. třída ZŠ - Matematika</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #eef6ff, #f9fbff);
+      color: #1f2937;
+    }
+
+    header {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    header h1 {
+      margin: 0 0 10px;
+      font-size: 2rem;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 1.05rem;
+      opacity: 0.95;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 30px 20px 50px;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      display: block;
+      text-decoration: none;
+      background: white;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+      border-color: #93c5fd;
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 1.2rem;
+      color: #1d4ed8;
+    }
+
+    .card p {
+      margin: 0;
+      line-height: 1.5;
+      color: #4b5563;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-bottom: 12px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 0.85rem;
+      font-weight: bold;
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Matematika pro 2. třídu ZŠ</h1>
+    <p>Přehled interaktivních cvičení a úloh podle témat</p>
+  </header>
+
+  <main>
+    <h2 class="section-title">Vyber si téma</h2>
+
+    <div class="grid">
+      <a class="card" href="https://soptikopava.github.io/2-trida-zs-matematika/matematicky-skokan-pres-desitku.html">
+        <div class="badge">Matematika</div>
+        <h2>Odčítání přes desítku</h2>
+        <p>Procvičování odčítání přes desítku hravou a přehlednou formou.</p>
+      </a>
+
+      <a class="card" href="#">
+        <div class="badge">Matematika</div>
+        <h2>Sčítání do 100</h2>
+        <p>Sem později vložíš další HTML stránku se sčítáním do 100.</p>
+      </a>
+
+      <a class="card" href="#">
+        <div class="badge">Geometrie</div>
+        <h2>Geometrické tvary</h2>
+        <p>Místo pro další aktivitu zaměřenou na poznávání tvarů.</p>
+      </a>
+
+      <a class="card" href="#">
+        <div class="badge">Logika</div>
+        <h2>Slovní úlohy</h2>
+        <p>Sem můžeš přidat stránku se slovními úlohami nebo kvízem.</p>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    Vytvořeno pro výuku matematiky na 1. stupni
+  </footer>
+</body>
 </html>
