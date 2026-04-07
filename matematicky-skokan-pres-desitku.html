@@ -1,0 +1,736 @@
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matematický skokan přes desítku</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="m-0">
+  <div class="relative min-h-screen overflow-hidden bg-gradient-to-b from-sky-100 via-slate-100 to-violet-100 p-4 md:p-8">
+    <div class="pointer-events-none absolute -top-10 -left-10 h-40 w-40 rounded-full bg-violet-200 opacity-30 blur-2xl"></div>
+    <div class="pointer-events-none absolute top-1/3 -right-16 h-56 w-56 rounded-full bg-sky-200 opacity-30 blur-2xl"></div>
+    <div class="pointer-events-none absolute bottom-0 left-1/4 h-40 w-40 rounded-full bg-amber-200 opacity-30 blur-2xl"></div>
+    <div class="pointer-events-none absolute top-20 right-1/4 text-3xl opacity-20 animate-pulse">⭐</div>
+    <div class="pointer-events-none absolute bottom-24 left-10 text-2xl opacity-20 animate-bounce">🦋</div>
+
+    <div class="mx-auto max-w-6xl">
+      <div class="mb-6 overflow-hidden rounded-3xl bg-white p-6 shadow-lg">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-slate-800">Matematický skokan přes desítku</h1>
+            <p class="mt-2 text-slate-600">
+              Trénink odčítání přes desítku pro druhou třídu. Teď s trochou gamifikace, protože lidé udělají cokoliv pro hvězdičku.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button id="trainerBtn" class="rounded-2xl px-4 py-2 font-semibold shadow bg-slate-800 text-white">Trénink</button>
+            <button id="speedBtn" class="rounded-2xl px-4 py-2 font-semibold shadow bg-slate-200 text-slate-800">Rychlovka 60 s</button>
+          </div>
+        </div>
+
+        <div class="mt-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-sky-200 via-cyan-100 to-violet-200 p-5">
+            <div class="pointer-events-none absolute left-10 top-6 text-4xl opacity-20 animate-pulse">☁️</div>
+            <div class="pointer-events-none absolute right-16 bottom-4 text-3xl opacity-20 animate-bounce">🌟</div>
+            <div class="absolute -right-6 -top-6 text-7xl opacity-20">⭐</div>
+            <div class="absolute bottom-0 right-6 text-6xl opacity-20">🌈</div>
+            <div class="flex items-center gap-4">
+              <div id="mascotFaceLarge" class="flex h-24 w-24 items-center justify-center rounded-full bg-white/80 text-5xl shadow-inner">🦊</div>
+              <div>
+                <div class="text-sm font-bold uppercase tracking-widest text-violet-700">Průvodce hrou</div>
+                <div class="mt-1 text-2xl font-black text-slate-800">Skokan Lišák</div>
+                <p id="mascotBubble" class="mt-2 max-w-md rounded-2xl bg-white/80 px-4 py-3 text-sm font-medium text-slate-700 shadow-sm">
+                  Jsem Skokan Lišák. Sbírej hvězdy a přeskakuj desítky.
+                </p>
+              </div>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-2 text-sm font-semibold text-slate-700">
+              <span class="rounded-full bg-white/80 px-3 py-1 animate-pulse">✨ Kouzlo čísel</span>
+              <span class="rounded-full bg-white/80 px-3 py-1">🌟 Lovec hvězd</span>
+              <span class="rounded-full bg-white/80 px-3 py-1">🦊 Matematický parťák</span>
+              <span class="rounded-full bg-white/80 px-3 py-1">🎯 Mise: přes desítku</span>
+            </div>
+          </div>
+
+          <div class="rounded-3xl bg-slate-50 p-5">
+            <div class="text-sm font-bold uppercase tracking-widest text-slate-500">Mapa dobrodružství</div>
+            <div class="mt-4 flex items-center justify-between text-3xl">
+              <span>🌱</span>
+              <span class="mx-2 h-1 flex-1 rounded-full bg-slate-300"></span>
+              <span>🪵</span>
+              <span class="mx-2 h-1 flex-1 rounded-full bg-slate-300"></span>
+              <span>⭐</span>
+              <span class="mx-2 h-1 flex-1 rounded-full bg-slate-300"></span>
+              <span>🏰</span>
+            </div>
+            <p class="mt-3 text-sm text-slate-600">
+              Každý správný příklad posune Lišáka blíž k hvězdnému hradu. Ano, je to výchovná manipulace. Ale roztomilá.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div id="achievementToast" class="mb-4 hidden rounded-3xl border border-amber-300 bg-amber-100 px-5 py-3 text-center font-bold text-amber-900 shadow"></div>
+
+      <div class="mb-6 grid gap-4 md:grid-cols-4">
+        <div class="rounded-3xl bg-white p-4 shadow-lg">
+          <div class="text-sm text-slate-500">Level</div>
+          <div id="levelValue" class="mt-1 text-3xl font-black text-violet-700">1</div>
+          <div id="levelHint" class="mt-2 text-sm text-slate-600">Do dalšího levelu chybí 12 ⭐</div>
+        </div>
+        <div class="rounded-3xl bg-white p-4 shadow-lg">
+          <div class="text-sm text-slate-500">Hvězdy</div>
+          <div id="starsValue" class="mt-1 text-3xl font-black text-amber-500">0 ⭐</div>
+          <div class="mt-2 h-3 overflow-hidden rounded-full bg-slate-200">
+            <div id="starsBar" class="h-full rounded-full bg-amber-400 transition-all" style="width: 0%"></div>
+          </div>
+        </div>
+        <div class="rounded-3xl bg-white p-4 shadow-lg">
+          <div class="text-sm text-slate-500">Mise</div>
+          <div id="missionValue" class="mt-1 text-3xl font-black text-emerald-600">0/5</div>
+          <div class="mt-2 text-sm text-slate-600">5 správných odpovědí = bonus 3 ⭐</div>
+        </div>
+        <div class="rounded-3xl bg-white p-4 shadow-lg">
+          <div class="text-sm text-slate-500">Odměny</div>
+          <div id="achievementsCount" class="mt-1 text-3xl font-black text-sky-600">0</div>
+          <div class="mt-2 text-sm text-slate-600">Počet odemčených odznaků</div>
+        </div>
+      </div>
+
+      <div class="grid gap-6 md:grid-cols-3">
+        <div class="md:col-span-2 rounded-3xl bg-white p-6 shadow-lg">
+          <div class="mb-4 flex flex-wrap items-center gap-3 text-sm text-slate-600">
+            <span id="scoreBadge" class="rounded-full bg-slate-100 px-3 py-1">Body: 0</span>
+            <span id="streakBadgeCount" class="rounded-full bg-slate-100 px-3 py-1">Série: 0</span>
+            <span id="bestBadge" class="rounded-full bg-slate-100 px-3 py-1">Rekord: 0</span>
+            <span id="streakBadgeText" class="rounded-full bg-slate-100 px-3 py-1">🙂</span>
+            <span id="timeBadge" class="hidden rounded-full bg-slate-100 px-3 py-1">Čas: 60s</span>
+            <span id="heartsBadge" class="hidden rounded-full bg-slate-100 px-3 py-1">Životy: ❤️❤️❤️</span>
+          </div>
+
+          <div id="mainCard" class="relative overflow-hidden rounded-3xl bg-slate-50 p-6 text-center transition">
+            <div class="pointer-events-none absolute left-1/3 top-2 text-xl opacity-20 animate-pulse">✨</div>
+            <div class="pointer-events-none absolute right-1/4 bottom-6 text-xl opacity-20 animate-bounce">🌼</div>
+            <div class="pointer-events-none absolute left-4 top-4 text-3xl opacity-20">☁️</div>
+            <div class="pointer-events-none absolute right-5 top-5 text-4xl opacity-20">⭐</div>
+            <div class="pointer-events-none absolute bottom-4 left-6 text-3xl opacity-20">🌼</div>
+            <div class="pointer-events-none absolute bottom-4 right-6 text-3xl opacity-20">🦋</div>
+
+            <div class="mb-2 text-sm uppercase tracking-widest text-slate-500">Vypočítej</div>
+            <div class="mb-3 flex justify-center">
+              <div id="mascotChip" class="rounded-full bg-white px-4 py-2 text-sm font-bold text-violet-700 shadow-sm">
+                🦊 Skokan Lišák fandí každému správnému skoku
+              </div>
+            </div>
+            <div class="mb-3 text-xs font-semibold uppercase tracking-wider text-violet-600">
+              Mise skokana: nejdřív napiš rozklad, pak dopočítej výsledek
+            </div>
+            <div id="exampleText" class="mb-6 text-5xl font-black text-slate-800 md:text-7xl">62 - 8 = ?</div>
+
+            <div class="mx-auto mb-5 grid max-w-2xl gap-4 lg:grid-cols-2">
+              <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                <div id="breakdownTitle" class="mb-2 text-sm font-semibold text-slate-600">1. Zapiš rozklad čísla 8</div>
+                <div class="flex items-center justify-center gap-2 text-2xl font-bold text-slate-700">
+                  <span id="breakdownBase">8</span>
+                  <span>=</span>
+                  <input id="splitToTenInput" type="number" class="w-20 rounded-xl border border-slate-300 px-2 py-2 text-center text-xl outline-none focus:ring-2 focus:ring-amber-300" placeholder="?" />
+                  <span>+</span>
+                  <input id="splitRestInput" type="number" class="w-20 rounded-xl border border-slate-300 px-2 py-2 text-center text-xl outline-none focus:ring-2 focus:ring-amber-300" placeholder="?" />
+                </div>
+                <button id="checkBreakdownBtn" class="mt-3 w-full rounded-2xl bg-amber-500 px-4 py-3 font-bold text-white shadow">Zkontrolovat rozklad</button>
+              </div>
+
+              <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                <div class="mb-2 text-sm font-semibold text-slate-600">2. Dopiš výsledek</div>
+                <div class="flex flex-col gap-3 sm:flex-row">
+                  <input id="answerInput" type="number" class="flex-1 rounded-2xl border border-slate-300 px-4 py-3 text-center text-2xl outline-none focus:ring-2 focus:ring-slate-400" placeholder="výsledek" />
+                  <button id="checkAnswerBtn" class="rounded-2xl bg-violet-600 px-5 py-3 font-bold text-white shadow">Zkontrolovat</button>
+                </div>
+              </div>
+            </div>
+
+            <p id="messageText" class="mt-4 min-h-[28px] text-lg font-medium text-slate-700"></p>
+
+            <div class="mt-4 flex flex-wrap justify-center gap-2">
+              <button id="toggleHintBtn" class="rounded-2xl bg-amber-100 px-4 py-2 font-semibold text-amber-900">Nápověda</button>
+              <button id="toggleStepsBtn" class="rounded-2xl bg-emerald-100 px-4 py-2 font-semibold text-emerald-900">Ukázat postup</button>
+              <button id="nextExampleBtn" class="rounded-2xl bg-slate-200 px-4 py-2 font-semibold text-slate-800">Další příklad</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div class="rounded-3xl bg-white p-5 shadow-lg">
+            <h2 class="text-xl font-bold text-slate-800">Jak na to</h2>
+            <p class="mt-3 text-slate-600">
+              Jdi nejdřív na desítku. Nejdřív napiš rozklad odčítaného čísla tak, aby první část dovedla příklad na desítku. Pak dopočítej zbytek. Ano, i matematika si občas vynutí mezikrok.
+            </p>
+
+            <div id="stepsBox" class="mt-4 hidden rounded-2xl bg-slate-50 p-4 text-slate-700">
+              <div id="stepsTitle" class="font-semibold">Pro příklad 62 - 8:</div>
+              <div class="mt-2 space-y-1 text-sm md:text-base">
+                <div>1. Rozklad čísla <strong id="stepB1">8</strong> je <strong><span id="stepToTen">2</span> + <span id="stepRest">6</span></strong>.</div>
+                <div>2. Do nejbližší desítky odečti <strong id="stepToTen2">2</strong>.</div>
+                <div>3. <span id="stepA">62</span> - <span id="stepToTen3">2</span> = <strong id="stepFirstResult">60</strong></div>
+                <div>4. Ze zbytku odčítáš ještě <strong id="stepRest2">6</strong>.</div>
+                <div>5. <span id="stepFirstResult2">60</span> - <span id="stepRest3">6</span> = <strong id="stepCorrect">54</strong></div>
+              </div>
+            </div>
+
+            <details class="mt-4 rounded-2xl bg-slate-50 p-4 text-left text-sm text-slate-600">
+              <summary class="cursor-pointer font-semibold text-slate-700">Kontrolní testy výpočtů</summary>
+              <div id="debugTests" class="mt-3 space-y-2"></div>
+            </details>
+          </div>
+
+          <div class="rounded-3xl bg-white p-5 shadow-lg">
+            <h2 class="text-xl font-bold text-slate-800">Odznaky</h2>
+            <div id="achievementCards" class="mt-3 grid grid-cols-1 gap-2 text-sm text-slate-700"></div>
+          </div>
+
+          <div class="rounded-3xl bg-white p-5 shadow-lg">
+            <h2 class="text-xl font-bold text-slate-800">Mise</h2>
+            <ul class="mt-3 space-y-2 text-slate-600">
+              <li>• 5 správně za sebou = parádní série</li>
+              <li>• 5 správných odpovědí = bonusová mise</li>
+              <li>• v rychlovce zkus překonat rekord</li>
+              <li>• používej nápovědu jen když je fakt třeba</li>
+            </ul>
+          </div>
+
+          <div class="rounded-3xl bg-white p-5 shadow-lg">
+            <h2 class="text-xl font-bold text-slate-800">Pro rodiče</h2>
+            <p class="mt-3 text-slate-600">
+              Přidal jsem dětský obrázkový motiv s lišákem, mapou dobrodružství a jemnými dekoracemi v hlavní herní ploše. Jinými slovy, matematika už nevypadá jako tabulka v slavnostních šatech.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const achievementCards = [
+      { id: "streak3", label: "3 správně za sebou" },
+      { id: "streak5", label: "5 správně za sebou" },
+      { id: "level2", label: "Postup na level 2" },
+      { id: "stars30", label: "30 hvězd" },
+      { id: "mission5", label: "Denní mise splněna" },
+      { id: "survivor", label: "Dohraná rychlovka" },
+    ];
+
+    const tests = [
+      { a: 62, b: 8, expected: 54, toTen: 2, rest: 6 },
+      { a: 35, b: 9, expected: 26, toTen: 5, rest: 4 },
+      { a: 41, b: 7, expected: 34, toTen: 1, rest: 6 },
+      { a: 70, b: 8, expected: 62, toTen: 0, rest: 8 },
+      { a: 54, b: 7, expected: 47, toTen: 4, rest: 3 },
+      { a: 81, b: 4, expected: 77, toTen: 1, rest: 3 },
+    ];
+
+    const state = {
+      a: 62,
+      b: 8,
+      answer: "",
+      splitToTenInput: "",
+      splitRestInput: "",
+      message: "",
+      score: 0,
+      streak: 0,
+      hearts: 3,
+      showHint: false,
+      showSteps: false,
+      mode: "trainer",
+      timeLeft: 60,
+      best: 0,
+      shake: false,
+      stars: 0,
+      level: 1,
+      missionProgress: 0,
+      achievementToast: "",
+      achievements: [],
+      comboGlow: false,
+      mascotMood: "happy",
+      timerId: null,
+      toastId: null,
+      glowId: null,
+      shakeId: null,
+    };
+
+    const els = {
+      trainerBtn: document.getElementById("trainerBtn"),
+      speedBtn: document.getElementById("speedBtn"),
+      achievementToast: document.getElementById("achievementToast"),
+      levelValue: document.getElementById("levelValue"),
+      levelHint: document.getElementById("levelHint"),
+      starsValue: document.getElementById("starsValue"),
+      starsBar: document.getElementById("starsBar"),
+      missionValue: document.getElementById("missionValue"),
+      achievementsCount: document.getElementById("achievementsCount"),
+      scoreBadge: document.getElementById("scoreBadge"),
+      streakBadgeCount: document.getElementById("streakBadgeCount"),
+      bestBadge: document.getElementById("bestBadge"),
+      streakBadgeText: document.getElementById("streakBadgeText"),
+      timeBadge: document.getElementById("timeBadge"),
+      heartsBadge: document.getElementById("heartsBadge"),
+      mainCard: document.getElementById("mainCard"),
+      mascotFaceLarge: document.getElementById("mascotFaceLarge"),
+      mascotBubble: document.getElementById("mascotBubble"),
+      mascotChip: document.getElementById("mascotChip"),
+      exampleText: document.getElementById("exampleText"),
+      breakdownTitle: document.getElementById("breakdownTitle"),
+      breakdownBase: document.getElementById("breakdownBase"),
+      splitToTenInput: document.getElementById("splitToTenInput"),
+      splitRestInput: document.getElementById("splitRestInput"),
+      checkBreakdownBtn: document.getElementById("checkBreakdownBtn"),
+      answerInput: document.getElementById("answerInput"),
+      checkAnswerBtn: document.getElementById("checkAnswerBtn"),
+      messageText: document.getElementById("messageText"),
+      toggleHintBtn: document.getElementById("toggleHintBtn"),
+      toggleStepsBtn: document.getElementById("toggleStepsBtn"),
+      nextExampleBtn: document.getElementById("nextExampleBtn"),
+      stepsBox: document.getElementById("stepsBox"),
+      stepsTitle: document.getElementById("stepsTitle"),
+      stepB1: document.getElementById("stepB1"),
+      stepToTen: document.getElementById("stepToTen"),
+      stepRest: document.getElementById("stepRest"),
+      stepToTen2: document.getElementById("stepToTen2"),
+      stepA: document.getElementById("stepA"),
+      stepToTen3: document.getElementById("stepToTen3"),
+      stepFirstResult: document.getElementById("stepFirstResult"),
+      stepRest2: document.getElementById("stepRest2"),
+      stepFirstResult2: document.getElementById("stepFirstResult2"),
+      stepRest3: document.getElementById("stepRest3"),
+      stepCorrect: document.getElementById("stepCorrect"),
+      debugTests: document.getElementById("debugTests"),
+      achievementCards: document.getElementById("achievementCards"),
+    };
+
+    function randomExample() {
+      while (true) {
+        const tens = Math.floor(Math.random() * 8) + 2;
+        const ones = Math.floor(Math.random() * 9) + 1;
+        const aa = tens * 10 + ones;
+        const bb = Math.floor(Math.random() * 8) + 2;
+        if (ones < bb && aa - bb >= 0) return { aa, bb };
+      }
+    }
+
+    function getExampleBreakdown(a, b) {
+      const toTen = a % 10;
+      const rest = b - toTen;
+      const correct = a - b;
+      return { toTen, rest, correct, firstStepResult: a - toTen };
+    }
+
+    function getBestScore() {
+      return Number(localStorage.getItem("math-best-pres-desitku") || 0);
+    }
+
+    function saveBestScore(score) {
+      localStorage.setItem("math-best-pres-desitku", String(score));
+    }
+
+    function getSavedMeta() {
+      try {
+        return JSON.parse(localStorage.getItem("math-gamification-meta") || '{"stars":0,"level":1,"achievements":[]}');
+      } catch {
+        return { stars: 0, level: 1, achievements: [] };
+      }
+    }
+
+    function saveMeta(meta) {
+      localStorage.setItem("math-gamification-meta", JSON.stringify(meta));
+    }
+
+    function getLevelFromStars(stars) {
+      return Math.floor(stars / 12) + 1;
+    }
+
+    function persistMeta(nextStars, nextLevel, nextAchievements = state.achievements) {
+      saveMeta({ stars: nextStars, level: nextLevel, achievements: nextAchievements });
+    }
+
+    function getMascotFace() {
+      if (state.mascotMood === "super") return "🚀🦊";
+      if (state.mascotMood === "sad") return "🥺🦊";
+      if (state.mascotMood === "thinking") return "🤔🦊";
+      return "🦊";
+    }
+
+    function getMascotBubble() {
+      if (state.mascotMood === "super") return "Ty jo, tohle je kombo jak z boss fightu.";
+      if (state.mascotMood === "sad") return "Nevadí. Zkus to po krocích a desítka padne.";
+      if (state.mascotMood === "thinking") return "Rozklad sedí. Teď dokonči skok do cíle.";
+      return "Jsem Skokan Lišák. Sbírej hvězdy a přeskakuj desítky.";
+    }
+
+    function showToast(text) {
+      state.achievementToast = text;
+      if (state.toastId) clearTimeout(state.toastId);
+      state.toastId = setTimeout(() => {
+        state.achievementToast = "";
+        render();
+      }, 2200);
+      render();
+    }
+
+    function unlockAchievement(id, label) {
+      if (state.achievements.includes(id)) return;
+      state.achievements = [...state.achievements, id];
+      saveMeta({ stars: state.stars, level: state.level, achievements: state.achievements });
+      showToast(`🏆 Odemčeno: ${label}`);
+    }
+
+    function rewardPlayer(gainedStars, nextStreak) {
+      const oldLevel = state.level;
+      state.stars += gainedStars;
+      state.level = getLevelFromStars(state.stars);
+      state.missionProgress = Math.min(5, state.missionProgress + 1);
+      persistMeta(state.stars, state.level);
+
+      if (state.level > oldLevel) {
+        showToast(`🚀 Level ${state.level}! To už je skoro matematická mafie.`);
+      }
+
+      if (nextStreak >= 3) {
+        state.comboGlow = true;
+        if (state.glowId) clearTimeout(state.glowId);
+        state.glowId = setTimeout(() => {
+          state.comboGlow = false;
+          render();
+        }, 500);
+      }
+
+      if (nextStreak === 3) unlockAchievement("streak3", "Třískóre: 3 správně za sebou");
+      if (nextStreak === 5) unlockAchievement("streak5", "Kombo mistr: 5 správně za sebou");
+      if (state.stars >= 12) unlockAchievement("level2", "Postup na level 2");
+      if (state.stars >= 30) unlockAchievement("stars30", "Nasbíráno 30 hvězd");
+
+      if (state.missionProgress >= 5 && !state.achievements.includes("mission5")) {
+        unlockAchievement("mission5", "Denní mise: 5 správných odpovědí");
+        state.stars += 3;
+        state.level = getLevelFromStars(state.stars);
+        persistMeta(state.stars, state.level, state.achievements);
+      }
+      render();
+    }
+
+    function nextExample() {
+      const { aa, bb } = randomExample();
+      state.a = aa;
+      state.b = bb;
+      state.answer = "";
+      state.splitToTenInput = "";
+      state.splitRestInput = "";
+      state.message = "";
+      state.showHint = false;
+      state.showSteps = false;
+      state.mascotMood = "happy";
+      render();
+    }
+
+    function celebrate(nextStreak, gainedStars) {
+      const praise = nextStreak >= 5 ? "Mega kombo!" : nextStreak >= 3 ? "Paráda!" : "Správně!";
+      state.mascotMood = nextStreak >= 5 ? "super" : "happy";
+      state.message = `${praise} +${gainedStars} ⭐`;
+      render();
+    }
+
+    function fail() {
+      state.mascotMood = "sad";
+      state.shake = true;
+      if (state.shakeId) clearTimeout(state.shakeId);
+      state.shakeId = setTimeout(() => {
+        state.shake = false;
+        render();
+      }, 350);
+      render();
+    }
+
+    function startTimer() {
+      stopTimer();
+      state.timerId = setInterval(() => {
+        if (state.mode !== "speed") return;
+        state.timeLeft -= 1;
+        if (state.timeLeft <= 0) {
+          state.timeLeft = 0;
+          stopTimer();
+          state.message = `Čas vypršel. Nasbíral jsi ${state.score} bodů.`;
+          if (state.score > state.best) {
+            state.best = state.score;
+            saveBestScore(state.score);
+          }
+        }
+        render();
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (state.timerId) {
+        clearInterval(state.timerId);
+        state.timerId = null;
+      }
+    }
+
+    function startSpeed() {
+      state.mode = "speed";
+      state.score = 0;
+      state.streak = 0;
+      state.hearts = 3;
+      state.timeLeft = 60;
+      state.missionProgress = 0;
+      state.message = "Jedeeem. Máš 60 sekund.";
+      nextExample();
+      startTimer();
+      render();
+    }
+
+    function startTrainer() {
+      state.mode = "trainer";
+      state.score = 0;
+      state.streak = 0;
+      state.hearts = 3;
+      state.timeLeft = 60;
+      state.missionProgress = 0;
+      state.message = "Trénink bez stresu. Což je u matematiky skoro sci-fi.";
+      stopTimer();
+      nextExample();
+      render();
+    }
+
+    function submitBreakdown() {
+      const breakdown = getExampleBreakdown(state.a, state.b);
+      const rawA = String(state.splitToTenInput).trim();
+      const rawB = String(state.splitRestInput).trim();
+      const splitA = Number(rawA);
+      const splitB = Number(rawB);
+
+      if (rawA === "" || rawB === "") {
+        state.message = "Doplň obě části rozkladu.";
+        render();
+        return;
+      }
+
+      if (Number.isNaN(splitA) || Number.isNaN(splitB)) {
+        state.message = "Rozklad musí být zapsaný čísly.";
+        render();
+        return;
+      }
+
+      if (splitA + splitB !== state.b) {
+        state.message = `Rozklad nesedí. Číslo ${state.b} musí dát dohromady ${state.b}.`;
+        state.showSteps = true;
+        fail();
+        return;
+      }
+
+      if (splitA !== breakdown.toTen || splitB !== breakdown.rest) {
+        state.message = `Tohle je jiný rozklad. Tady chceme ${breakdown.toTen} + ${breakdown.rest}.`;
+        state.showSteps = true;
+        fail();
+        return;
+      }
+
+      state.mascotMood = "thinking";
+      state.message = `Rozklad sedí: ${state.b} = ${breakdown.toTen} + ${breakdown.rest}. Teď už jen dopočítej výsledek.`;
+      state.showSteps = true;
+      render();
+    }
+
+    function submitAnswer() {
+      if (state.mode === "speed" && state.timeLeft <= 0) return;
+
+      const breakdown = getExampleBreakdown(state.a, state.b);
+      const trimmed = String(state.answer).trim();
+
+      if (trimmed === "") {
+        state.message = "Napiš výsledek.";
+        render();
+        return;
+      }
+
+      const num = Number(trimmed);
+      if (Number.isNaN(num)) {
+        state.message = "Výsledek musí být číslo.";
+        render();
+        return;
+      }
+
+      if (num === breakdown.correct) {
+        const gain = state.streak >= 4 ? 2 : 1;
+        const gainedStars = state.streak >= 4 ? 3 : state.streak >= 2 ? 2 : 1;
+        const nextStreak = state.streak + 1;
+        state.score += gain;
+        state.streak = nextStreak;
+        rewardPlayer(gainedStars, nextStreak);
+        celebrate(nextStreak, gainedStars);
+        nextExample();
+        return;
+      }
+
+      state.streak = 0;
+      fail();
+
+      if (state.mode === "speed") {
+        state.hearts -= 1;
+        if (state.hearts <= 0) {
+          if (state.score > state.best) {
+            state.best = state.score;
+            saveBestScore(state.score);
+          }
+          unlockAchievement("survivor", "Bojovník: dohraná rychlovka");
+          state.message = `Došly životy. Správně bylo ${breakdown.correct}.`;
+          state.timeLeft = 0;
+          stopTimer();
+          render();
+          return;
+        }
+
+        state.message = `Těsně vedle. Správně je ${breakdown.correct}.`;
+        nextExample();
+        return;
+      }
+
+      state.message = `Ještě ne. Správně je ${breakdown.correct}. Zkus si rozklad.`;
+      state.showSteps = true;
+      render();
+    }
+
+    function renderDebugTests() {
+      els.debugTests.innerHTML = "";
+      tests.forEach((test) => {
+        const breakdown = getExampleBreakdown(test.a, test.b);
+        const result = breakdown.correct;
+        const passed = result === test.expected && breakdown.toTen === test.toTen && breakdown.rest === test.rest;
+        const div = document.createElement("div");
+        div.className = "rounded-xl bg-white px-3 py-2 shadow-sm";
+        div.textContent = `${test.a} - ${test.b} = ${result}, rozklad ${breakdown.toTen} + ${breakdown.rest} ${passed ? "✅" : `❌ čeká se ${test.expected}`}`;
+        els.debugTests.appendChild(div);
+      });
+    }
+
+    function renderAchievements() {
+      els.achievementCards.innerHTML = "";
+      achievementCards.forEach((card) => {
+        const unlocked = state.achievements.includes(card.id);
+        const div = document.createElement("div");
+        div.className = `rounded-2xl px-3 py-2 ${unlocked ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-500"}`;
+        div.textContent = `${unlocked ? "🏅" : "🔒"} ${card.label}`;
+        els.achievementCards.appendChild(div);
+      });
+    }
+
+    function render() {
+      const breakdown = getExampleBreakdown(state.a, state.b);
+      const streakBadge = state.streak >= 5 ? "🔥 Super série" : state.streak >= 3 ? "⚡ Jedeš" : "🙂";
+      const starsToNextLevel = Math.max(state.level * 12 - state.stars, 0);
+
+      els.trainerBtn.className = `rounded-2xl px-4 py-2 font-semibold shadow ${state.mode === "trainer" ? "bg-slate-800 text-white" : "bg-slate-200 text-slate-800"}`;
+      els.speedBtn.className = `rounded-2xl px-4 py-2 font-semibold shadow ${state.mode === "speed" ? "bg-slate-800 text-white" : "bg-slate-200 text-slate-800"}`;
+
+      if (state.achievementToast) {
+        els.achievementToast.textContent = state.achievementToast;
+        els.achievementToast.classList.remove("hidden");
+      } else {
+        els.achievementToast.classList.add("hidden");
+      }
+
+      els.levelValue.textContent = state.level;
+      els.levelHint.textContent = `Do dalšího levelu chybí ${starsToNextLevel} ⭐`;
+      els.starsValue.textContent = `${state.stars} ⭐`;
+      els.starsBar.style.width = `${((state.stars % 12) / 12) * 100}%`;
+      els.missionValue.textContent = `${state.missionProgress}/5`;
+      els.achievementsCount.textContent = state.achievements.length;
+      els.scoreBadge.textContent = `Body: ${state.score}`;
+      els.streakBadgeCount.textContent = `Série: ${state.streak}`;
+      els.bestBadge.textContent = `Rekord: ${state.best}`;
+      els.streakBadgeText.textContent = streakBadge;
+      els.timeBadge.textContent = `Čas: ${state.timeLeft}s`;
+      els.heartsBadge.textContent = `Životy: ${"❤️".repeat(Math.max(state.hearts, 0))}${state.hearts === 0 ? "💀" : ""}`;
+      els.timeBadge.classList.toggle("hidden", state.mode !== "speed");
+      els.heartsBadge.classList.toggle("hidden", state.mode !== "speed");
+
+      els.mascotFaceLarge.textContent = getMascotFace();
+      els.mascotBubble.textContent = getMascotBubble();
+      els.mascotChip.textContent = `${getMascotFace()} Skokan Lišák fandí každému správnému skoku`;
+
+      els.exampleText.textContent = `${state.a} - ${state.b} = ?`;
+      els.breakdownTitle.textContent = `1. Zapiš rozklad čísla ${state.b}`;
+      els.breakdownBase.textContent = state.b;
+      els.answerInput.value = state.answer;
+      els.splitToTenInput.value = state.splitToTenInput;
+      els.splitRestInput.value = state.splitRestInput;
+      els.answerInput.disabled = state.mode === "speed" && state.timeLeft <= 0;
+      els.messageText.textContent = state.message;
+      els.toggleHintBtn.textContent = state.showHint ? "Skrýt nápovědu" : "Nápověda";
+      els.toggleStepsBtn.textContent = state.showSteps ? "Skrýt postup" : "Ukázat postup";
+
+      els.mainCard.className = `relative overflow-hidden rounded-3xl p-6 text-center transition ${state.shake ? "translate-x-1" : ""} ${state.comboGlow ? "bg-yellow-100 ring-4 ring-yellow-200" : "bg-slate-50"}`;
+      els.stepsBox.classList.toggle("hidden", !(state.showHint || state.showSteps));
+      els.stepsTitle.textContent = `Pro příklad ${state.a} - ${state.b}:`;
+      els.stepB1.textContent = state.b;
+      els.stepToTen.textContent = breakdown.toTen;
+      els.stepRest.textContent = breakdown.rest;
+      els.stepToTen2.textContent = breakdown.toTen;
+      els.stepA.textContent = state.a;
+      els.stepToTen3.textContent = breakdown.toTen;
+      els.stepFirstResult.textContent = breakdown.firstStepResult;
+      els.stepRest2.textContent = breakdown.rest;
+      els.stepFirstResult2.textContent = breakdown.firstStepResult;
+      els.stepRest3.textContent = breakdown.rest;
+      els.stepCorrect.textContent = breakdown.correct;
+
+      renderAchievements();
+    }
+
+    function init() {
+      state.best = getBestScore();
+      const meta = getSavedMeta();
+      state.stars = meta.stars || 0;
+      state.level = meta.level || 1;
+      state.achievements = meta.achievements || [];
+
+      renderDebugTests();
+      nextExample();
+      render();
+
+      els.trainerBtn.addEventListener("click", startTrainer);
+      els.speedBtn.addEventListener("click", startSpeed);
+      els.checkBreakdownBtn.addEventListener("click", submitBreakdown);
+      els.checkAnswerBtn.addEventListener("click", submitAnswer);
+      els.nextExampleBtn.addEventListener("click", nextExample);
+
+      els.toggleHintBtn.addEventListener("click", () => {
+        state.showHint = !state.showHint;
+        render();
+      });
+
+      els.toggleStepsBtn.addEventListener("click", () => {
+        state.showSteps = !state.showSteps;
+        render();
+      });
+
+      els.answerInput.addEventListener("input", (e) => {
+        state.answer = e.target.value;
+      });
+
+      els.answerInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") submitAnswer();
+      });
+
+      els.splitToTenInput.addEventListener("input", (e) => {
+        state.splitToTenInput = e.target.value;
+      });
+
+      els.splitRestInput.addEventListener("input", (e) => {
+        state.splitRestInput = e.target.value;
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
