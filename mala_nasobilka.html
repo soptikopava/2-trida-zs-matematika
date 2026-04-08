@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Malá násobilka</title>
+  <style>
+    :root{
+      --bg1:#ffd1e8;
+      --bg2:#fff2a8;
+      --bg3:#bfe9ff;
+      --card:#ffffffcc;
+      --text:#243041;
+      --muted:#5e6a7d;
+      --pink:#e63da9;
+      --violet:#7a4dff;
+      --cyan:#10b8d9;
+      --orange:#ff8a3d;
+      --green:#35c56c;
+      --danger:#ff5d7a;
+      --shadow:0 18px 45px rgba(67, 45, 98, .18);
+      --radius:28px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color:var(--text);
+      background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:20px;
+      display:grid;
+      grid-template-columns: 2fr 1fr;
+      gap:24px;
+    }
+    .card{
+      background:var(--card);
+      backdrop-filter: blur(8px);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .bar{
+      height:12px;
+      background: linear-gradient(90deg, #ff5ab5, #ffd33d, #4ed8ff);
+    }
+    .pad{padding:22px}
+    h1{
+      margin:0;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      color:#c11b8d;
+      line-height:1.05;
+    }
+    .subtitle{
+      font-size:1.08rem;
+      color:var(--muted);
+      margin-top:10px;
+    }
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .badge{
+      background:#f3f6ff;
+      border-radius:999px;
+      padding:12px 18px;
+      font-weight:800;
+      box-shadow:var(--shadow);
+      white-space:nowrap;
+    }
+    .rank-beginner{background:#dff2ff;color:#1f6e9a}
+    .rank-good{background:#dff9e8;color:#187a45}
+    .rank-expert{background:#f0e6ff;color:#6a31c6}
+    .rank-master{background:#fff0c8;color:#9a6b07}
+    .section-title{
+      font-size:1.6rem;
+      font-weight:900;
+      color:#6e38d8;
+      margin:0 0 18px;
+    }
+    .row{display:flex; flex-wrap:wrap; gap:12px}
+    button{
+      border:none;
+      cursor:pointer;
+      border-radius:999px;
+      padding:13px 18px;
+      font-size:1rem;
+      font-weight:800;
+      transition:transform .12s ease, filter .2s ease, box-shadow .2s ease;
+      box-shadow:0 8px 18px rgba(0,0,0,.08);
+    }
+    button:hover{transform:translateY(-1px); filter:brightness(1.02)}
+    button:active{transform:translateY(1px)}
+    .mode-btn{
+      background:white;
+      color:#6a3cd7;
+      border:2px solid #eadcff;
+    }
+    .mode-btn.active.multiply{background:#e63da9;color:#fff;border-color:#e63da9}
+    .mode-btn.active.divide{background:#10b8d9;color:#fff;border-color:#10b8d9}
+    .mode-btn.active.mixed{background:linear-gradient(90deg, #7a4dff, #ff49aa);color:#fff;border-color:transparent}
+    .table-btn{
+      min-width:54px;
+      border-radius:20px;
+      background:#fff;
+      color:#344055;
+      border:2px solid #eef1f4;
+      padding:12px 16px;
+    }
+    .table-btn.active{
+      background:linear-gradient(135deg, #ff9d3d, #ff4ea2);
+      color:white;
+      border-color:transparent;
+    }
+    .question{
+      background:linear-gradient(135deg, #ffe884, #ffc0e3, #a9ecff);
+      border-radius:32px;
+      padding:34px 20px;
+      text-align:center;
+      box-shadow: inset 0 2px 12px rgba(255,255,255,.45);
+      margin:8px 0 18px;
+      animation: popIn .28s ease;
+    }
+    @keyframes popIn{
+      from{transform:scale(.96) translateY(8px); opacity:0}
+      to{transform:scale(1) translateY(0); opacity:1}
+    }
+    .question-text{
+      font-size: clamp(3rem, 8vw, 5.3rem);
+      font-weight:900;
+      letter-spacing:.02em;
+    }
+    .input-row{display:flex; gap:12px; flex-wrap:wrap}
+    input{
+      flex:1;
+      min-width:230px;
+      border-radius:24px;
+      border:3px solid #ffd1ea;
+      padding:17px 18px;
+      font-size:1.8rem;
+      font-weight:900;
+      outline:none;
+    }
+    input:focus{border-color:#db44ad}
+    .ok-btn{
+      background:linear-gradient(90deg, #e63da9, #7a4dff);
+      color:white;
+      border-radius:24px;
+      padding:16px 26px;
+    }
+    .message{
+      margin-top:16px;
+      background:#ffffffb8;
+      border:1px solid #ffd7ea;
+      border-radius:24px;
+      padding:16px 18px;
+      min-height:62px;
+      font-size:1.12rem;
+      box-shadow:0 8px 20px rgba(0,0,0,.05);
+    }
+    .stats-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    .stat{
+      border-radius:24px;
+      padding:16px;
+      box-shadow:0 8px 20px rgba(0,0,0,.05);
+    }
+    .s1{background:linear-gradient(135deg,#dff6ff,#c9f0ff)}
+    .s2{background:linear-gradient(135deg,#ffe1ef,#ffd2e6)}
+    .s3{background:linear-gradient(135deg,#efe3ff,#ffd6ff)}
+    .s4{background:linear-gradient(135deg,#fff0bc,#ffe0a3)}
+    .hearts{grid-column:1 / -1; background:linear-gradient(90deg,#ffe1eb,#ffd2e5)}
+    .stat-label{font-size:.92rem; color:var(--muted)}
+    .stat-value{font-size:2rem; font-weight:900; margin-top:6px}
+    .heart{font-size:2rem; margin-right:4px}
+    .heart.off{opacity:.25}
+    .restart{
+      grid-column:1 / -1;
+      border-radius:24px;
+      background:white;
+      border:2px solid #e9edf2;
+      color:#384255;
+    }
+    .medal-title{
+      font-size:1.6rem;
+      font-weight:900;
+      color:#ef7b11;
+      margin:0 0 16px;
+    }
+    .medal{
+      display:flex;
+      gap:14px;
+      padding:14px;
+      border-radius:24px;
+      border:2px solid #e8edf2;
+      background:#fafbfd;
+      margin-bottom:12px;
+    }
+    .medal.active{
+      background:linear-gradient(90deg,#fff0be,#ffe0bf);
+      border-color:#f2c04d;
+      box-shadow:0 8px 20px rgba(255,185,55,.18);
+    }
+    .medal-icon{
+      width:52px;height:52px;border-radius:18px;display:flex;align-items:center;justify-content:center;
+      font-size:1.6rem;background:#dfe6ee;
+    }
+    .medal.active .medal-icon{background:#ffd45f}
+    .medal-name{font-weight:900}
+    .medal-desc{font-size:.95rem;color:var(--muted);margin-top:4px}
+    .fireworks{
+      position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:40;
+    }
+    .burst{
+      position:absolute;
+      left:50%; top:55%;
+      font-size: clamp(2rem, 4vw, 3rem);
+      animation: burst 1.45s ease-out forwards;
+    }
+    @keyframes burst{
+      0%{transform:translate(0,0) scale(.2); opacity:0}
+      15%{opacity:1}
+      75%{opacity:1}
+      100%{transform:translate(var(--dx), var(--dy)) scale(1.35); opacity:0}
+    }
+    .flash{
+      position:fixed; inset:0; background:white; opacity:0; pointer-events:none; z-index:30;
+      animation: flash .45s ease;
+    }
+    @keyframes flash{
+      0%{opacity:0}
+      30%{opacity:.45}
+      100%{opacity:0}
+    }
+    .footer-note{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:.9rem;
+      text-align:center;
+    }
+    @media (max-width: 900px){
+      .wrap{grid-template-columns:1fr}
+      .top{align-items:flex-start; flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <div id="flash-holder"></div>
+  <div id="fireworks" class="fireworks"></div>
+
+  <div class="wrap">
+    <div>
+      <div class="top">
+        <div>
+          <h1>🎯 Malá násobilka</h1>
+          <div class="subtitle">Zábavné počítání pro malé školáky. Jednou za čas lidé udělají i něco užitečného.</div>
+        </div>
+        <div id="rankBadge" class="badge rank-beginner">Začátečník</div>
+      </div>
+
+      <div class="card">
+        <div class="bar"></div>
+        <div class="pad">
+          <h2 class="section-title">Procvičování</h2>
+
+          <div class="row" id="modeButtons"></div>
+          <div class="row" id="tableButtons" style="margin-top:14px"></div>
+
+          <div class="question">
+            <div id="questionText" class="question-text">2 × 1</div>
+          </div>
+
+          <div class="input-row">
+            <input id="answerInput" type="number" inputmode="numeric" placeholder="Napiš výsledek" />
+            <button class="ok-btn" id="submitBtn">OK</button>
+          </div>
+
+          <div class="message" id="messageBox">Jdeme na to.</div>
+        </div>
+      </div>
+      <div class="footer-note">Samostatný HTML soubor. Otevřeš v prohlížeči a jedeš. Žádný build, žádné npm rituály.</div>
+    </div>
+
+    <div>
+      <div class="card pad">
+        <h2 class="section-title" style="color:#0e9cc0">Statistiky</h2>
+        <div class="stats-grid">
+          <div class="stat s1"><div class="stat-label">Body</div><div class="stat-value" id="scoreVal">0</div></div>
+          <div class="stat s2"><div class="stat-label">Vyřešeno</div><div class="stat-value" id="solvedVal">0</div></div>
+          <div class="stat s3"><div class="stat-label">Série</div><div class="stat-value" id="streakVal">0</div></div>
+          <div class="stat s4"><div class="stat-label">Nej série</div><div class="stat-value" id="bestStreakVal">0</div></div>
+          <div class="stat hearts">
+            <div class="stat-label">Srdíčka</div>
+            <div id="heartsVal" style="margin-top:8px"></div>
+          </div>
+          <button class="restart" id="restartBtn">🔄 Restart</button>
+        </div>
+      </div>
+
+      <div class="card pad" style="margin-top:24px">
+        <h2 class="medal-title">Medaile</h2>
+        <div id="medalsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const medalDefs = [
+      { id: "starter", title: "Startér", desc: "Vyřeš 5 příkladů", icon: "⭐", goal: 5 },
+      { id: "fighter", title: "Borec", desc: "Získej 10 bodů", icon: "🏅", goal: 10 },
+      { id: "combo", title: "Kombo král", desc: "3 správně za sebou", icon: "✨", goal: 3 },
+      { id: "hero", title: "Hrdina násobilky", desc: "Vyřeš 20 příkladů", icon: "🏆", goal: 20 },
+    ];
+
+    const modeDefs = [
+      { id: "multiply", label: "Krát" },
+      { id: "divide", label: "Děleno" },
+      { id: "mixed", label: "Krát + Děleno" },
+    ];
+
+    const fireworkEmojis = ["🎆", "🎇", "✨", "🌟", "💥", "🎉", "🪄", "🌈"];
+    const happyMessages = [
+      "Správně! To bylo hustý.",
+      "Yes! Počítáš jak boss.",
+      "Mega dobrý! Jen tak dál.",
+      "Topka! Tohle sedlo.",
+      "Správně! Mozek jede naplno.",
+    ];
+
+    const state = {
+      mode: "multiply",
+      selectedTable: 2,
+      question: null,
+      input: "",
+      message: "Jdeme na to.",
+      score: 0,
+      solved: 0,
+      streak: 0,
+      bestStreak: 0,
+      hearts: 3,
+      unlocked: [],
+    };
+
+    const els = {
+      questionText: document.getElementById("questionText"),
+      answerInput: document.getElementById("answerInput"),
+      messageBox: document.getElementById("messageBox"),
+      scoreVal: document.getElementById("scoreVal"),
+      solvedVal: document.getElementById("solvedVal"),
+      streakVal: document.getElementById("streakVal"),
+      bestStreakVal: document.getElementById("bestStreakVal"),
+      heartsVal: document.getElementById("heartsVal"),
+      rankBadge: document.getElementById("rankBadge"),
+      modeButtons: document.getElementById("modeButtons"),
+      tableButtons: document.getElementById("tableButtons"),
+      medalsList: document.getElementById("medalsList"),
+      fireworks: document.getElementById("fireworks"),
+      flashHolder: document.getElementById("flash-holder"),
+      submitBtn: document.getElementById("submitBtn"),
+      restartBtn: document.getElementById("restartBtn"),
+    };
+
+    function rand(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function resolveMode(mode) {
+      if (mode === "mixed") return Math.random() > 0.5 ? "multiply" : "divide";
+      return mode;
+    }
+
+    function makeQuestion(selectedTable = 2, mode = "multiply") {
+      const multiplier = rand(1, 10);
+      const finalMode = resolveMode(mode);
+
+      if (finalMode === "multiply") {
+        return {
+          a: selectedTable,
+          b: multiplier,
+          answer: selectedTable * multiplier,
+          operation: "multiply",
+        };
+      }
+
+      return {
+        a: selectedTable * multiplier,
+        b: selectedTable,
+        answer: multiplier,
+        operation: "divide",
+      };
+    }
+
+    function getRank(score) {
+      if (score >= 30) return { label: "Mistr", className: "rank-master" };
+      if (score >= 20) return { label: "Expert", className: "rank-expert" };
+      if (score >= 10) return { label: "Šikulka", className: "rank-good" };
+      return { label: "Začátečník", className: "rank-beginner" };
+    }
+
+    function runSelfChecks() {
+      const multiplyQuestion = makeQuestion(2, "multiply");
+      console.assert(multiplyQuestion.operation === "multiply", "multiply mode should create multiplication questions");
+      console.assert(multiplyQuestion.a === 2, "multiply mode should preserve selected table");
+      console.assert(multiplyQuestion.answer === multiplyQuestion.a * multiplyQuestion.b, "multiply mode should compute correct answer");
+
+      const divideQuestion = makeQuestion(4, "divide");
+      console.assert(divideQuestion.operation === "divide", "divide mode should create division questions");
+      console.assert(divideQuestion.b === 4, "divide mode should divide by selected table");
+      console.assert(divideQuestion.a / divideQuestion.b === divideQuestion.answer, "divide mode should compute whole-number answer");
+
+      const mixedQuestion = makeQuestion(5, "mixed");
+      console.assert(["multiply", "divide"].includes(mixedQuestion.operation), "mixed mode should resolve to valid mode");
+
+      console.assert(getRank(0).label === "Začátečník", "0 points should be Začátečník");
+      console.assert(getRank(10).label === "Šikulka", "10 points should be Šikulka");
+      console.assert(getRank(20).label === "Expert", "20 points should be Expert");
+      console.assert(getRank(30).label === "Mistr", "30 points should be Mistr");
+    }
+
+    function nextQuestion(newMode = state.mode, newTable = state.selectedTable) {
+      state.question = makeQuestion(newTable, newMode);
+      els.answerInput.value = "";
+      render();
+      els.answerInput.focus();
+    }
+
+    function resetGame() {
+      state.score = 0;
+      state.solved = 0;
+      state.streak = 0;
+      state.bestStreak = 0;
+      state.hearts = 3;
+      state.unlocked = [];
+      state.message = "Nová hra. Jedeme znovu.";
+      nextQuestion(state.mode, state.selectedTable);
+    }
+
+    function unlockMedalsIfNeeded() {
+      const gained = [];
+      for (const medal of medalDefs) {
+        const hasIt = state.unlocked.includes(medal.id);
+        const achieved =
+          (medal.id === "starter" && state.solved >= medal.goal) ||
+          (medal.id === "fighter" && state.score >= medal.goal) ||
+          (medal.id === "combo" && state.bestStreak >= medal.goal) ||
+          (medal.id === "hero" && state.solved >= medal.goal);
+
+        if (!hasIt && achieved) gained.push(medal.id);
+      }
+
+      if (gained.length) {
+        state.unlocked.push(...gained);
+        state.message = "Nová medaile! To už je skoro matematická šlechta.";
+        showFireworks();
+      }
+    }
+
+    function showFireworks() {
+      els.fireworks.innerHTML = "";
+      for (let i = 0; i < 24; i++) {
+        const span = document.createElement("div");
+        span.className = "burst";
+        const distance = 120 + (i % 4) * 50;
+        const angle = (i / 24) * Math.PI * 2;
+        span.style.setProperty("--dx", `${Math.cos(angle) * distance}px`);
+        span.style.setProperty("--dy", `${Math.sin(angle) * distance}px`);
+        span.style.animationDelay = `${i * 0.03}s`;
+        span.textContent = fireworkEmojis[i % fireworkEmojis.length];
+        els.fireworks.appendChild(span);
+      }
+      const flash = document.createElement("div");
+      flash.className = "flash";
+      els.flashHolder.innerHTML = "";
+      els.flashHolder.appendChild(flash);
+
+      window.setTimeout(() => {
+        els.fireworks.innerHTML = "";
+        els.flashHolder.innerHTML = "";
+      }, 1700);
+    }
+
+    function handleSubmit() {
+      const trimmed = els.answerInput.value.trim();
+
+      if (!trimmed) {
+        state.message = "Napiš výsledek. Křišťálová koule je mimo službu.";
+        render();
+        return;
+      }
+
+      const value = Number(trimmed);
+      if (Number.isNaN(value)) {
+        state.message = "Tohle není číslo. Matematika je v tomhle dost vybíravá.";
+        render();
+        return;
+      }
+
+      if (value === state.question.answer) {
+        const nextStreak = state.streak + 1;
+        state.score += 1;
+        state.solved += 1;
+        state.streak = nextStreak;
+        state.bestStreak = Math.max(state.bestStreak, nextStreak);
+        state.message = happyMessages[rand(0, happyMessages.length - 1)];
+        unlockMedalsIfNeeded();
+        showFireworks();
+        nextQuestion();
+        return;
+      }
+
+      state.hearts = Math.max(0, state.hearts - 1);
+      state.streak = 0;
+      state.solved += 1;
+      state.message = `Špatně. Správně je ${state.question.answer}. Nevadí, další dáš.`;
+      unlockMedalsIfNeeded();
+      nextQuestion();
+
+      if (state.hearts === 0) {
+        state.message = `Došla srdíčka. Správně bylo ${state.question.answer}. Dej restart a jedeme znova.`;
+      }
+    }
+
+    function renderModeButtons() {
+      els.modeButtons.innerHTML = "";
+      for (const mode of modeDefs) {
+        const btn = document.createElement("button");
+        btn.textContent = mode.label;
+        btn.className = `mode-btn ${state.mode === mode.id ? `active ${mode.id}` : ""}`;
+        btn.addEventListener("click", () => {
+          state.mode = mode.id;
+          nextQuestion(state.mode, state.selectedTable);
+        });
+        els.modeButtons.appendChild(btn);
+      }
+    }
+
+    function renderTableButtons() {
+      els.tableButtons.innerHTML = "";
+      for (let n = 2; n <= 10; n++) {
+        const btn = document.createElement("button");
+        btn.textContent = String(n);
+        btn.className = `table-btn ${state.selectedTable === n ? "active" : ""}`;
+        btn.addEventListener("click", () => {
+          state.selectedTable = n;
+          nextQuestion(state.mode, n);
+        });
+        els.tableButtons.appendChild(btn);
+      }
+    }
+
+    function renderHearts() {
+      els.heartsVal.innerHTML = "";
+      for (let i = 0; i < 3; i++) {
+        const span = document.createElement("span");
+        span.className = `heart ${i < state.hearts ? "" : "off"}`;
+        span.textContent = "❤️";
+        els.heartsVal.appendChild(span);
+      }
+    }
+
+    function renderMedals() {
+      els.medalsList.innerHTML = "";
+      for (const medal of medalDefs) {
+        const active = state.unlocked.includes(medal.id);
+        const div = document.createElement("div");
+        div.className = `medal ${active ? "active" : ""}`;
+        div.innerHTML = `
+          <div class="medal-icon">${medal.icon}</div>
+          <div>
+            <div class="medal-name">${medal.title} ${active ? "🏅" : ""}</div>
+            <div class="medal-desc">${medal.desc}</div>
+          </div>
+        `;
+        els.medalsList.appendChild(div);
+      }
+    }
+
+    function render() {
+      const op = state.question.operation === "multiply" ? "×" : "÷";
+      els.questionText.textContent = `${state.question.a} ${op} ${state.question.b}`;
+      els.messageBox.textContent = state.message;
+      els.scoreVal.textContent = String(state.score);
+      els.solvedVal.textContent = String(state.solved);
+      els.streakVal.textContent = String(state.streak);
+      els.bestStreakVal.textContent = String(state.bestStreak);
+
+      const rank = getRank(state.score);
+      els.rankBadge.textContent = rank.label;
+      els.rankBadge.className = `badge ${rank.className}`;
+
+      renderModeButtons();
+      renderTableButtons();
+      renderHearts();
+      renderMedals();
+    }
+
+    els.submitBtn.addEventListener("click", handleSubmit);
+    els.restartBtn.addEventListener("click", resetGame);
+    els.answerInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleSubmit();
+    });
+
+    runSelfChecks();
+    state.question = makeQuestion(2, "multiply");
+    render();
+  </script>
+</body>
+</html>
